@@ -5,18 +5,18 @@
  */
 package org.eclipse.emf.emfstore.modelgenerator.common;
 
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map.Entry;
 
+import org.eclipse.emf.common.command.AbstractCommand;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
@@ -24,9 +24,9 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EPackage.Registry;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.edit.command.AddCommand;
@@ -34,6 +34,7 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
+import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.modelgenerator.common.attribute.AttributeHandler;
 import org.eclipse.emf.emfstore.modelgenerator.common.attribute.IAttributeSetter;
 
@@ -657,12 +658,24 @@ public final class ModelGeneratorUtil {
 	 * @param ignoreAndLog should exceptions be ignored and added to <code>exceptionLog</code>?
 	 * @see EcoreUtil#delete(EObject)
 	 */
-	public static void delete(EObject eObject, Set<RuntimeException> exceptionLog, boolean ignoreAndLog) {
-		try {
-			EcoreUtil.delete(eObject,true);
+	public static void delete(final EObject eObject, Set<RuntimeException> exceptionLog, boolean ignoreAndLog) {
+
+		Configuration.getEditingDomain().getCommandStack().execute(new AbstractCommand() {
 			
-		} catch(RuntimeException e) {
-			handle(e, exceptionLog, ignoreAndLog);
-		}
+			@Override
+			public void redo() {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void execute() {
+				EcoreUtil.delete(eObject, true);
+			}
+			
+			@Override
+			public boolean canExecute() {
+				return true;
+			}
+		});
 	}
 }

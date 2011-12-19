@@ -12,13 +12,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.Usersession;
+import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.test.SetupHelper;
 import org.eclipse.emf.emfstore.common.model.Project;
-import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.modelgenerator.ModelGenerator;
 import org.eclipse.emf.emfstore.modelgenerator.common.ModelGeneratorConfiguration;
 import org.eclipse.emf.emfstore.modelgenerator.common.ModelGeneratorUtil;
@@ -46,15 +44,8 @@ public class ModelGeneratorTest extends ServerTests {
 	public void beforeTest() throws EmfStoreException {
 		super.beforeTest();
 
-		projectSpace = org.eclipse.emf.emfstore.client.model.ModelFactory.eINSTANCE.createProjectSpace();
-		projectSpace.setProject(org.eclipse.emf.emfstore.common.model.ModelFactory.eINSTANCE.createProject());
-		projectSpace.setProjectName(projectName);
-		projectSpace.setProjectDescription(projectDescription);
-		projectSpace.setLocalOperations(org.eclipse.emf.emfstore.client.model.ModelFactory.eINSTANCE
-			.createOperationComposite());
-		ResourceSet resourceSet = new ResourceSetImpl();
-		resourceSet.getLoadOptions().putAll(ModelUtil.getResourceLoadOptions());
-		projectSpace.initResources(resourceSet);
+		projectSpace = WorkspaceManager.getInstance().getCurrentWorkspace()
+			.createLocalProject(projectName, projectDescription);
 
 		Usersession session = org.eclipse.emf.emfstore.client.model.ModelFactory.eINSTANCE.createUsersession();
 		session.setServerInfo(SetupHelper.getServerInfo());
